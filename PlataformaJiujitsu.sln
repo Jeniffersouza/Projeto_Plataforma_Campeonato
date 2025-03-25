@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35825.156 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlataformaJiujitsu", "PlataformaJiujitsu.csproj", "{385130B7-E5F5-425F-97D0-4A0B27B3ADDA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{385130B7-E5F5-425F-97D0-4A0B27B3ADDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{385130B7-E5F5-425F-97D0-4A0B27B3ADDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{385130B7-E5F5-425F-97D0-4A0B27B3ADDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{385130B7-E5F5-425F-97D0-4A0B27B3ADDA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7F009E6F-B55E-42B8-9645-7F25E5D47D52}
+	EndGlobalSection
+EndGlobal
