@@ -77,6 +77,10 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ESSA LINHA AQUI faz o app escutar dentro do Docker
+builder.WebHost.UseUrls("http://0.0.0.0:80");
+
+
 var app = builder.Build();
 
 // Configuração do pipeline de requisições
