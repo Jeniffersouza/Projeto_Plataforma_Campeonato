@@ -7,6 +7,8 @@ namespace PlataformaAPI.Data.Dtos
     {
         [Required]
         public string Username { get; set; }
+        [Required]
+        public string Nome { get; set; }
 
         [Required]
         public DateTime DataNascimento { get; set; }

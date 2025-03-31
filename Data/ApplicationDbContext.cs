@@ -12,8 +12,8 @@ namespace PlataformaAPI.Data
         {
         }
 
+        // DbSets para as entidades específicas do seu aplicativo
         public DbSet<Campeonato> Campeonatos { get; set; }
-        public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Academia> Academias { get; set; }
         public DbSet<Atleta> Atletas { get; set; }
         public DbSet<Inscricao> Inscricoes { get; set; }

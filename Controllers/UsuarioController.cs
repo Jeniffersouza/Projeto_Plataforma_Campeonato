@@ -41,6 +41,7 @@ namespace PlataformaAPI.Controllers
 
             var usuario = _mapper.Map<Usuario>(dto);
             usuario.UserName = dto.Username;
+            usuario.Nome = dto.Nome;
             // Aqui você pode definir o tipo de usuário conforme necessário (por exemplo, Atleta)
             usuario.TipoUsuario = dto.TipoUsuario;
 
