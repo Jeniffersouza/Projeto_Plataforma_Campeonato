@@ -129,4 +129,4 @@ C:\Users\ajeni\source\repos\PlataformaJiujitsu\obj\Debug\net8.0\PlataformaJiujit
 C:\Users\ajeni\source\repos\PlataformaJiujitsu\obj\Debug\net8.0\ref\PlataformaJiujitsu.dll
 C:\Users\ajeni\source\repos\PlataformaJiujitsu\bin\Debug\net8.0\MySqlConnector.dll
 C:\Users\ajeni\source\repos\PlataformaJiujitsu\bin\Debug\net8.0\Pomelo.EntityFrameworkCore.MySql.dll
-C:\Users\ajeni\source\repos\PlataformaJiujitsu\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
+C:\Users\ajeni\source\repos\PlataformaJiujitsu\bin\Debug\net8.0\appsettings.Production.json
