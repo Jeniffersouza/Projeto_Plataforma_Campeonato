@@ -17,5 +17,6 @@ namespace PlataformaAPI.Data
         public DbSet<Academia> Academias { get; set; }
         public DbSet<Atleta> Atletas { get; set; }
         public DbSet<Inscricao> Inscricoes { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
     }
 }
