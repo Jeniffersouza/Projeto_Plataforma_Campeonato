@@ -13,7 +13,7 @@ WORKDIR /app
 
 # Copia os arquivos compilados da etapa anterior
 COPY --from=build /app/out .
-
+a
 # Define o ambiente como produção dentro do container
 ENV ASPNETCORE_ENVIRONMENT=Production
 
