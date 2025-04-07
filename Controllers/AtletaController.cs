@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PlataformaAPI.Data;
 using PlataformaAPI.Models;
 using PlataformaJiujitsu.Data.Dtos;
 using PlataformaJiujitsu.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PlataformaJiujitsu.Controllers
 {
@@ -23,101 +23,79 @@ namespace PlataformaJiujitsu.Controllers
         }
 
         [HttpPost("cadastrar-atleta")]
-        public async Task<IActionResult> CadastrarAtleta(CreateAtletaDto dto)
+        public async Task<IActionResult> CadastrarAtleta(CreateAtletaUsuarioDto dto)
         {
-            // Cria o Identity User
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // Verificar se o e-mail já está cadastrado
+            var usuarioExistente = await _userManager.FindByEmailAsync(dto.Email);
+            if (usuarioExistente != null)
+                return Conflict(new { mensagem = "E-mail já cadastrado." });
+
+            // Criar usuário
             var usuario = new Usuario
             {
-                UserName = dto.Email,
                 Email = dto.Email,
-                Nome = dto.Nome,
+                UserName = dto.Email, // <<< Adicione isso!
+                NomeCompleto = dto.NomeCompleto,
                 DataNascimento = dto.DataNascimento,
+                CPF = dto.CPF,
                 TipoUsuario = TipoUsuario.Atleta
             };
 
-            var result = await _userManager.CreateAsync(usuario, dto.Senha);
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
 
-            // Cria o Atleta
+            var result = await _userManager.CreateAsync(usuario, dto.Password);
+            if (!result.Succeeded)
+                return BadRequest(new { erros = result.Errors.Select(e => e.Description) });
+
+            // Criar Atleta
             var atleta = new Atleta
             {
                 UsuarioId = usuario.Id,
-                Graduacao = dto.Graduacao,
+                GraduacaoId = dto.GraduacaoId,
                 Peso = dto.Peso,
-                AcademiaId = dto.AcademiaId
+                Sexo = dto.Sexo,
+                EsporteId = dto.EsporteId,
+                AcademiaId = dto.AcademiaId,
+                ProfessorId = dto.ProfessorId
             };
 
             _context.Atletas.Add(atleta);
             await _context.SaveChangesAsync();
 
-            return Ok("Atleta cadastrado com sucesso!");
+            return CreatedAtAction(nameof(CadastrarAtleta), new
+            {
+                mensagem = "Atleta cadastrado com sucesso!",
+                atleta.Id,
+                usuario.Email,
+                atleta.GraduacaoId,
+                atleta.Peso
+            });
         }
-        // Método para listar todos os atletas
+
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Atleta>>> GetAtletas()
         {
-            var atletas = await _context.Atletas.ToListAsync();
+            var atletas = await _context.Atletas
+                .Include(a => a.Usuario) // Inclui os dados do usuário
+                .ToListAsync();
+
             return Ok(atletas);
         }
 
-        [HttpPost("inscrever")]
-        [Authorize]  // Garante que o usuário precisa estar logado
-        public async Task<IActionResult> InscreverNoCampeonato([FromBody] InscricaoDto inscricaoDto)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Atleta>> GetAtletaPorId(int id)
         {
-            // Verificar se o usuário está autenticado
-            var usuarioAtual = await _userManager.GetUserAsync(User);  // Verifica o usuário logado
+            var atleta = await _context.Atletas
+                .Include(a => a.Usuario)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (usuarioAtual == null)
-            {
-                return Unauthorized("Você precisa estar logado para se inscrever.");
-            }
-
-            // Verificar se o usuário é um Atleta (verificando o campo TipoUsuario)
-            if (usuarioAtual.TipoUsuario != TipoUsuario.Atleta)
-            {
-                return Unauthorized("Somente atletas podem se inscrever.");
-            }
-
-            // Verificar se o atleta existe no banco de dados
-            var atleta = await _context.Atletas.FirstOrDefaultAsync(a => a.UsuarioId == usuarioAtual.Id);
             if (atleta == null)
-            {
                 return NotFound("Atleta não encontrado.");
-            }
 
-            // Verificar se o campeonato existe
-            var campeonato = await _context.Campeonatos.FirstOrDefaultAsync(c => c.Id == inscricaoDto.CampeonatoId);
-            if (campeonato == null)
-            {
-                return NotFound("Campeonato não encontrado.");
-            }
-
-            // Verificar se o atleta já está inscrito no campeonato
-            var inscricaoExistente = await _context.Inscricoes
-                .FirstOrDefaultAsync(i => i.AtletaId == atleta.Id && i.CampeonatoId == campeonato.Id);
-
-            if (inscricaoExistente != null)
-            {
-                return BadRequest("O atleta já está inscrito neste campeonato.");
-            }
-
-            // Criar a inscrição
-            var inscricao = new Inscricao
-            {
-                AtletaId = atleta.Id,
-                CampeonatoId = campeonato.Id,
-                DataInscricao = DateTime.Now
-            };
-
-            _context.Inscricoes.Add(inscricao);
-            await _context.SaveChangesAsync();
-
-            // Retornar a confirmação com ID da inscrição
-            return Ok(new { Message = "Atleta inscrito com sucesso.", InscricaoId = inscricao.Id });
+            return Ok(atleta);
         }
-
-
-
     }
 }
