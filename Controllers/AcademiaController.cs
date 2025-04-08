@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using PlataformaAPI.Data;
-using PlataformaJiujitsu.Models;
-using PlataformaJiujitsu.Data.Dtos;
-using System.Collections.Generic;
+using PlataformaJiujitsu.Models; // Substitua pelo namespace do seu modelo de Academia
+using PlataformaJiujitsu.Data; // Substitua pelo namespace do seu ApplicationDbContext
 using System.Threading.Tasks;
+using PlataformaAPI.Data;
+using PlataformaJiujitsu.Data.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace PlataformaJiujitsu.Controllers
 {
@@ -18,7 +18,6 @@ namespace PlataformaJiujitsu.Controllers
         {
             _context = context;
         }
-
         // Método para listar todas as academias
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Academia>>> GetAcademias()
@@ -27,37 +26,27 @@ namespace PlataformaJiujitsu.Controllers
             return Ok(academias);
         }
 
-        // Método para buscar uma academia por ID
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Academia>> GetAcademia(int id)
-        {
-            var academia = await _context.Academias.FindAsync(id);
-            if (academia == null)
-                return NotFound("Academia não encontrada.");
-
-            return Ok(academia);
-        }
-
         // Endpoint para cadastrar uma nova academia
         [HttpPost("cadastrar")]
         public async Task<IActionResult> CadastrarAcademia([FromBody] CreateAcademiaDto dto)
         {
             if (string.IsNullOrEmpty(dto.Nome))
+            {
                 return BadRequest("O nome da academia é obrigatório.");
-
-   
+            }
 
             var academia = new Academia
             {
                 Nome = dto.Nome,
-                
+                Endereco = dto.Endereco, // Pode ser vazio
+                CNPJ = dto.CNPJ // Pode ser vazio
             };
 
             try
             {
                 _context.Academias.Add(academia);
                 await _context.SaveChangesAsync();
-                return CreatedAtAction(nameof(GetAcademia), new { id = academia.Id }, academia);
+                return CreatedAtAction(nameof(CadastrarAcademia), new { id = academia.Id }, academia);
             }
             catch (System.Exception ex)
             {

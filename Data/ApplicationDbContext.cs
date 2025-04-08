@@ -18,23 +18,5 @@ namespace PlataformaAPI.Data
         public DbSet<Atleta> Atletas { get; set; }
         public DbSet<Inscricao> Inscricoes { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
-        public DbSet<Professor> Professores { get; set; }
-        public DbSet<Esporte> Esportes { get; set; }
-        public DbSet<Graduacao> Graduacoes { get; set; }
-
-        public DbSet<Categoria> Categorias { get; set; } // Adicionando Categoria no DbContext
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            // Definição do relacionamento entre Graduacao e Esporte
-            modelBuilder.Entity<Graduacao>()
-                .HasOne(g => g.Esporte)
-                .WithMany() // Um esporte pode ter várias graduações
-                .HasForeignKey(g => g.EsporteId)
-                .OnDelete(DeleteBehavior.Cascade); // Se um esporte for excluído, suas graduações também serão
-        }
-
     }
 }
