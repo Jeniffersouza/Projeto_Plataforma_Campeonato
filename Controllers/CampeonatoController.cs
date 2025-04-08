@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using PlataformaAPI.Data;
 using PlataformaAPI.Data.Dtos;
 using PlataformaAPI.Models;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using PlataformaJiujitsu.Models;
 
 namespace PlataformaAPI.Controllers
 {
@@ -24,90 +22,91 @@ namespace PlataformaAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AdicionaCampeonato([FromBody] CreateCampeonatoDto campeonatoDto)
+        public IActionResult AdicionaCampeonato([FromBody] CreateCampeonatoDto campeonatoDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            try
-            {
-                var campeonato = _mapper.Map<Campeonato>(campeonatoDto);
-                _context.Campeonatos.Add(campeonato);
-                await _context.SaveChangesAsync();
+            Campeonato campeonato = _mapper.Map<Campeonato>(campeonatoDto);
+            _context.Campeonatos.Add(campeonato);
+            _context.SaveChanges();
 
-                var readDto = _mapper.Map<ReadCampeonatoDto>(campeonato);
-                return CreatedAtAction(nameof(RecuperarCampeonatoPorId), new { id = campeonato.Id }, readDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno: {ex.Message}");
-            }
+            return CreatedAtAction(nameof(RecuperarCampeonatoPorId), new { id = campeonato.Id }, campeonato);
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ReadCampeonatoDto>>> RecuperarCampeonatos([FromQuery] int skip = 0, [FromQuery] int take = 50)
+        public IEnumerable<ReadCampeonatoDto> RecuperarCampeonatos([FromQuery] int skip = 0, [FromQuery] int take = 50)
         {
-            var campeonatos = await _context.Campeonatos.Skip(skip).Take(take).ToListAsync();
-            return Ok(_mapper.Map<List<ReadCampeonatoDto>>(campeonatos));
+            return _mapper.Map<List<ReadCampeonatoDto>>(_context.Campeonatos.Skip(skip).Take(take));
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> RecuperarCampeonatoPorId(int id)
+        public IActionResult RecuperarCampeonatoPorId(int id)
         {
-            var campeonato = await _context.Campeonatos.FindAsync(id);
-            if (campeonato == null) return NotFound("Campeonato não encontrado.");
+            var campeonato = _context.Campeonatos.FirstOrDefault(c => c.Id == id);
 
-            return Ok(_mapper.Map<ReadCampeonatoDto>(campeonato));
+            if (campeonato == null)
+            {
+                return NotFound("Campeonato não encontrado.");
+            }
+            var campeonatoDto = _mapper.Map<ReadCampeonatoDto>(campeonato);
+
+            return Ok(campeonatoDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> AtualizaCampeonato(int id, [FromBody] UpdateCampeonatoDto campeonatoDto)
+        public IActionResult AtualizaCampeonato(int id, [FromBody] UpdateCampeonatoDto campeonatoDto)
         {
-            var campeonato = await _context.Campeonatos.FindAsync(id);
-            if (campeonato == null) return NotFound("Campeonato não encontrado.");
-
+            var campeonato = _context.Campeonatos.FirstOrDefault(
+                campeonato => campeonato.Id == id);
+            if (campeonato == null) return NotFound();
             _mapper.Map(campeonatoDto, campeonato);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro ao atualizar: {ex.Message}");
-            }
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletaCampeonato(int id)
-        {
-            var campeonato = await _context.Campeonatos.FindAsync(id);
-            if (campeonato == null) return NotFound("Campeonato não encontrado.");
-
-            _context.Campeonatos.Remove(campeonato);
-            await _context.SaveChangesAsync();
-
+            _context.SaveChanges();
             return NoContent();
         }
 
-        [HttpGet("{campeonatoId}/inscritos")]
+        [HttpDelete("{id}")]
+        public IActionResult DeletaCampeonato(int id)
+        {
+            var campeonato = _context.Campeonatos.FirstOrDefault(c => c.Id == id);
+
+            if (campeonato == null)
+            {
+                return NotFound(new { mensagem = "Campeonato não encontrado." });
+            }
+
+            _context.Campeonatos.Remove(campeonato);
+            _context.SaveChanges();
+
+            return NoContent(); // Retorna 204 (No Content) para indicar que foi excluído com sucesso
+        }
+        [HttpGet("campeonato/{campeonatoId}/inscritos")]
         public async Task<IActionResult> GetAtletasInscritosNoCampeonato(int campeonatoId)
         {
-            var campeonatoExiste = await _context.Campeonatos.AnyAsync(c => c.Id == campeonatoId);
-            if (!campeonatoExiste) return NotFound("Campeonato não encontrado.");
+            // Verificar se o campeonato existe
+            var campeonato = await _context.Campeonatos.FirstOrDefaultAsync(c => c.Id == campeonatoId);
+            if (campeonato == null)
+            {
+                return NotFound("Campeonato não encontrado.");
+            }
 
+            // Recuperar os atletas inscritos no campeonato
             var atletasInscritos = await _context.Inscricoes
                 .Where(i => i.CampeonatoId == campeonatoId)
                 .Select(i => new
                 {
-                    i.AtletaId,
-                    NomeAtleta = i.Atleta.Usuario.NomeCompleto,
-                    i.DataInscricao
+                    AtletaId = i.AtletaId,
+                    NomeAtleta = i.Atleta.Usuario.Nome,
+                    DataInscricao = i.DataInscricao
                 })
                 .ToListAsync();
+
+            if (atletasInscritos.Count == 0)
+            {
+                return Ok("Nenhum atleta inscrito neste campeonato.");
+            }
 
             return Ok(atletasInscritos);
         }
