@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PlataformaJiujitsu.Migrations
 {
     /// <inheritdoc />
-    public partial class AddProfessoresTable : Migration
+    public partial class InitialCreateMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -123,7 +123,7 @@ namespace PlataformaJiujitsu.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Esporte",
+                name: "Esportes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -133,7 +133,7 @@ namespace PlataformaJiujitsu.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Esporte", x => x.Id);
+                    table.PrimaryKey("PK_Esportes", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -287,32 +287,7 @@ namespace PlataformaJiujitsu.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Categoria",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nome = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Faixa = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    PesoMaximo = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
-                    CampeonatoId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Categoria", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Categoria_Campeonatos_CampeonatoId",
-                        column: x => x.CampeonatoId,
-                        principalTable: "Campeonatos",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "Graduacao",
+                name: "Graduacoes",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -323,11 +298,11 @@ namespace PlataformaJiujitsu.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Graduacao", x => x.Id);
+                    table.PrimaryKey("PK_Graduacoes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Graduacao_Esporte_EsporteId",
+                        name: "FK_Graduacoes_Esportes_EsporteId",
                         column: x => x.EsporteId,
-                        principalTable: "Esporte",
+                        principalTable: "Esportes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -342,6 +317,7 @@ namespace PlataformaJiujitsu.Migrations
                     UsuarioId = table.Column<string>(type: "varchar(255)", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Sexo = table.Column<int>(type: "int", nullable: false),
+                    DataNascimento = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     GraduacaoId = table.Column<int>(type: "int", nullable: false),
                     Peso = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
                     EsporteId = table.Column<int>(type: "int", nullable: false),
@@ -364,15 +340,15 @@ namespace PlataformaJiujitsu.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Atletas_Esporte_EsporteId",
+                        name: "FK_Atletas_Esportes_EsporteId",
                         column: x => x.EsporteId,
-                        principalTable: "Esporte",
+                        principalTable: "Esportes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Atletas_Graduacao_GraduacaoId",
+                        name: "FK_Atletas_Graduacoes_GraduacaoId",
                         column: x => x.GraduacaoId,
-                        principalTable: "Graduacao",
+                        principalTable: "Graduacoes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -384,6 +360,40 @@ namespace PlataformaJiujitsu.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Categoria",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nome = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    PesoMinimo = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    PesoMaximo = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    FaixaEtaria = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Sexo = table.Column<int>(type: "int", nullable: false),
+                    GraduacaoId = table.Column<int>(type: "int", nullable: false),
+                    CampeonatoId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categoria", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Categoria_Campeonatos_CampeonatoId",
+                        column: x => x.CampeonatoId,
+                        principalTable: "Campeonatos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Categoria_Graduacoes_GraduacaoId",
+                        column: x => x.GraduacaoId,
+                        principalTable: "Graduacoes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Inscricoes",
                 columns: table => new
                 {
@@ -391,6 +401,7 @@ namespace PlataformaJiujitsu.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     AtletaId = table.Column<int>(type: "int", nullable: false),
                     CampeonatoId = table.Column<int>(type: "int", nullable: false),
+                    CategoriaId = table.Column<int>(type: "int", nullable: true),
                     DataInscricao = table.Column<DateTime>(type: "datetime(6)", nullable: false)
                 },
                 constraints: table =>
@@ -408,6 +419,11 @@ namespace PlataformaJiujitsu.Migrations
                         principalTable: "Campeonatos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Inscricoes_Categoria_CategoriaId",
+                        column: x => x.CategoriaId,
+                        principalTable: "Categoria",
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -479,8 +495,13 @@ namespace PlataformaJiujitsu.Migrations
                 column: "CampeonatoId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Graduacao_EsporteId",
-                table: "Graduacao",
+                name: "IX_Categoria_GraduacaoId",
+                table: "Categoria",
+                column: "GraduacaoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Graduacoes_EsporteId",
+                table: "Graduacoes",
                 column: "EsporteId");
 
             migrationBuilder.CreateIndex(
@@ -492,6 +513,11 @@ namespace PlataformaJiujitsu.Migrations
                 name: "IX_Inscricoes_CampeonatoId",
                 table: "Inscricoes",
                 column: "CampeonatoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Inscricoes_CategoriaId",
+                table: "Inscricoes",
+                column: "CategoriaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Professores_AcademiaId",
@@ -518,9 +544,6 @@ namespace PlataformaJiujitsu.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Categoria");
-
-            migrationBuilder.DropTable(
                 name: "Inscricoes");
 
             migrationBuilder.DropTable(
@@ -530,22 +553,25 @@ namespace PlataformaJiujitsu.Migrations
                 name: "Atletas");
 
             migrationBuilder.DropTable(
-                name: "Campeonatos");
+                name: "Categoria");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Graduacao");
-
-            migrationBuilder.DropTable(
                 name: "Professores");
 
             migrationBuilder.DropTable(
-                name: "Esporte");
+                name: "Campeonatos");
+
+            migrationBuilder.DropTable(
+                name: "Graduacoes");
 
             migrationBuilder.DropTable(
                 name: "Academias");
+
+            migrationBuilder.DropTable(
+                name: "Esportes");
         }
     }
 }

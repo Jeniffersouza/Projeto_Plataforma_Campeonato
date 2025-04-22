@@ -19,6 +19,9 @@ public class Atleta
     [Required(ErrorMessage = "O sexo é obrigatório.")]
     public SexoEnum Sexo { get; set; }  // Masculino ou Feminino
 
+    [Required(ErrorMessage = "A data de nascimento é obrigatória.")]
+    public DateTime DataNascimento { get; set; }
+
 
     // Graduação (de acordo com o esporte)
     [Required(ErrorMessage = "A graduação é obrigatória.")]

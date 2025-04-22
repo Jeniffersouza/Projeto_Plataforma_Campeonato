@@ -22,7 +22,10 @@ namespace PlataformaAPI.Data
         public DbSet<Esporte> Esportes { get; set; }
         public DbSet<Graduacao> Graduacoes { get; set; }
 
-        public DbSet<Categoria> Categorias { get; set; } // Adicionando Categoria no DbContext
+        public DbSet<Categoria> Categoria { get; set; } // Adicionando Categoria no DbContext
+        public DbSet<Chave> Chaves { get; set; }
+        public DbSet<Luta> Lutas { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,6 +37,8 @@ namespace PlataformaAPI.Data
                 .WithMany() // Um esporte pode ter várias graduações
                 .HasForeignKey(g => g.EsporteId)
                 .OnDelete(DeleteBehavior.Cascade); // Se um esporte for excluído, suas graduações também serão
+
+           
         }
 
     }
