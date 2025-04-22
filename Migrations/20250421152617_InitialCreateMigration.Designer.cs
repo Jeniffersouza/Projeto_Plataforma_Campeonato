@@ -12,8 +12,8 @@ using PlataformaAPI.Data;
 namespace PlataformaJiujitsu.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250402201554_AddEsporteAndGraduacao")]
-    partial class AddEsporteAndGraduacao
+    [Migration("20250421152617_InitialCreateMigration")]
+    partial class InitialCreateMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,46 @@ namespace PlataformaJiujitsu.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
+            modelBuilder.Entity("Categoria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CampeonatoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FaixaEtaria")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("GraduacaoId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<decimal>("PesoMaximo")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<decimal>("PesoMinimo")
+                        .HasColumnType("decimal(65,30)");
+
+                    b.Property<int>("Sexo")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CampeonatoId");
+
+                    b.HasIndex("GraduacaoId");
+
+                    b.ToTable("Categoria");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -324,6 +364,9 @@ namespace PlataformaJiujitsu.Migrations
                         .IsRequired()
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("DataNascimento")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("EsporteId")
                         .HasColumnType("int");
 
@@ -356,35 +399,6 @@ namespace PlataformaJiujitsu.Migrations
                     b.HasIndex("UsuarioId");
 
                     b.ToTable("Atletas");
-                });
-
-            modelBuilder.Entity("PlataformaJiujitsu.Models.Categoria", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CampeonatoId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Faixa")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<decimal>("PesoMaximo")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CampeonatoId");
-
-                    b.ToTable("Categoria");
                 });
 
             modelBuilder.Entity("PlataformaJiujitsu.Models.Esporte", b =>
@@ -440,6 +454,9 @@ namespace PlataformaJiujitsu.Migrations
                     b.Property<int>("CampeonatoId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CategoriaId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("DataInscricao")
                         .HasColumnType("datetime(6)");
 
@@ -448,6 +465,8 @@ namespace PlataformaJiujitsu.Migrations
                     b.HasIndex("AtletaId");
 
                     b.HasIndex("CampeonatoId");
+
+                    b.HasIndex("CategoriaId");
 
                     b.ToTable("Inscricoes");
                 });
@@ -473,6 +492,25 @@ namespace PlataformaJiujitsu.Migrations
                     b.HasIndex("AcademiaId");
 
                     b.ToTable("Professores");
+                });
+
+            modelBuilder.Entity("Categoria", b =>
+                {
+                    b.HasOne("PlataformaAPI.Models.Campeonato", "Campeonato")
+                        .WithMany("Categorias")
+                        .HasForeignKey("CampeonatoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PlataformaJiujitsu.Models.Graduacao", "Graduacao")
+                        .WithMany()
+                        .HasForeignKey("GraduacaoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Campeonato");
+
+                    b.Navigation("Graduacao");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -567,17 +605,6 @@ namespace PlataformaJiujitsu.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("PlataformaJiujitsu.Models.Categoria", b =>
-                {
-                    b.HasOne("PlataformaAPI.Models.Campeonato", "Campeonato")
-                        .WithMany("Categorias")
-                        .HasForeignKey("CampeonatoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Campeonato");
-                });
-
             modelBuilder.Entity("PlataformaJiujitsu.Models.Graduacao", b =>
                 {
                     b.HasOne("PlataformaJiujitsu.Models.Esporte", "Esporte")
@@ -598,14 +625,20 @@ namespace PlataformaJiujitsu.Migrations
                         .IsRequired();
 
                     b.HasOne("PlataformaAPI.Models.Campeonato", "Campeonato")
-                        .WithMany()
+                        .WithMany("Inscricoes")
                         .HasForeignKey("CampeonatoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Categoria", "Categoria")
+                        .WithMany("Inscricoes")
+                        .HasForeignKey("CategoriaId");
+
                     b.Navigation("Atleta");
 
                     b.Navigation("Campeonato");
+
+                    b.Navigation("Categoria");
                 });
 
             modelBuilder.Entity("PlataformaJiujitsu.Models.Professor", b =>
@@ -619,9 +652,16 @@ namespace PlataformaJiujitsu.Migrations
                     b.Navigation("Academia");
                 });
 
+            modelBuilder.Entity("Categoria", b =>
+                {
+                    b.Navigation("Inscricoes");
+                });
+
             modelBuilder.Entity("PlataformaAPI.Models.Campeonato", b =>
                 {
                     b.Navigation("Categorias");
+
+                    b.Navigation("Inscricoes");
                 });
 
             modelBuilder.Entity("PlataformaJiujitsu.Models.Academia", b =>

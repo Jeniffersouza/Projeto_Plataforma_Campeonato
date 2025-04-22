@@ -31,28 +31,7 @@ namespace PlataformaAPI.Controllers
             _configuration = configuration;
         }
 
-        [HttpPost("cadastrar")]
-        public async Task<IActionResult> CadastraUsuario([FromBody] CreateUsuarioDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var usuarioExistente = await _userManager.FindByEmailAsync(dto.Email);
-            if (usuarioExistente != null)
-                return Conflict(new { mensagem = "E-mail já cadastrado." });
-
-            var usuario = _mapper.Map<Usuario>(dto);
-            usuario.Email = dto.Email;
-            usuario.NomeCompleto = dto.NomeCompleto;
-            usuario.TipoUsuario = dto.TipoUsuario;
-
-            var result = await _userManager.CreateAsync(usuario, dto.Password);
-
-            if (result.Succeeded)
-                return CreatedAtAction(nameof(CadastraUsuario), new { id = usuario.Id }, new { mensagem = "Usuário cadastrado com sucesso!", usuario.Id });
-
-            return BadRequest(new { erros = result.Errors.Select(e => e.Description) });
-        }
+        
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto dto)
@@ -91,7 +70,7 @@ namespace PlataformaAPI.Controllers
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
-                expires: DateTime.UtcNow.AddDays(1),
+                expires: DateTime.UtcNow.AddMinutes(1), // Token expira em 1 minutos
                 signingCredentials: credentials
             );
 

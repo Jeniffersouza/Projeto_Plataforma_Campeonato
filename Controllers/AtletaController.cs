@@ -58,7 +58,8 @@ namespace PlataformaJiujitsu.Controllers
                 Sexo = dto.Sexo,
                 EsporteId = dto.EsporteId,
                 AcademiaId = dto.AcademiaId,
-                ProfessorId = dto.ProfessorId
+                ProfessorId = dto.ProfessorId,
+                DataNascimento = dto.DataNascimento,
             };
 
             _context.Atletas.Add(atleta);

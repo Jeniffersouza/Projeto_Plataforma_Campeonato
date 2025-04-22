@@ -1,5 +1,4 @@
-﻿using PlataformaAPI.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace PlataformaAPI.Data.Dtos
 {
@@ -34,8 +33,5 @@ namespace PlataformaAPI.Data.Dtos
 
         public string LinkRegulamento { get; set; }
         public string LinkInscricao { get; set; }
-
-        public StatusCampeonato Status { get; set; }
-
     }
 }

@@ -1,26 +1,32 @@
 ﻿using PlataformaAPI.Models;
+using PlataformaJiujitsu.Models;
 using System.ComponentModel.DataAnnotations;
-
-namespace PlataformaJiujitsu.Models;
 
 public class Categoria
 {
-    [Key]
     public int Id { get; set; }
 
     [Required]
-    public string Nome { get; set; } // Exemplo: "Adulto - Leve (até 76kg)"
+    public string Nome { get; set; }
 
     [Required]
-    [RegularExpression("Masculino|Feminino", ErrorMessage = "O sexo deve ser 'Masculino' ou 'Feminino'.")]
-    public string Sexo { get; set; } // Adicionando o campo Sexo
-    [Required]
-    public string Faixa { get; set; } // Exemplo: "Faixa Azul"
+    public decimal PesoMinimo { get; set; }
 
     [Required]
-    public decimal PesoMaximo { get; set; } // Exemplo: 76.0 kg
+    public decimal PesoMaximo { get; set; }
 
     [Required]
+    public string FaixaEtaria { get; set; } // Ex: "Adulto", "Juvenil", etc
+
+    [Required]
+    public SexoEnum Sexo { get; set; }
+
+    [Required]
+    public int GraduacaoId { get; set; }
+    public Graduacao Graduacao { get; set; }
+
     public int CampeonatoId { get; set; }
     public Campeonato Campeonato { get; set; }
+
+    public ICollection<Inscricao> Inscricoes { get; set; }
 }
