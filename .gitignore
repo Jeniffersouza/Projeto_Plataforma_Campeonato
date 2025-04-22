@@ -2,10 +2,9 @@
 .vs/
 .vscode/
 .idea/
-# Ignore outros arquivos temporários
+# Ignore outros arquivos temporÃ¡rios
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
-echo "bin/" >> .gitignore
-echo "obj/" >> .gitignore
+
