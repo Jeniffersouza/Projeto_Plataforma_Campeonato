@@ -15,7 +15,7 @@ Console.WriteLine($"Connection String: {connectionString}");
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
      opts.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// ConfiguraÁ„o do Identity
+// Configura√ß√£o do Identity
 builder.Services
     .AddIdentity<Usuario, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -24,7 +24,7 @@ builder.Services
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
 
-// ConfiguraÁ„o de AutenticaÁ„o com JWT
+// Configura√ß√£o de Autentica√ß√£o com JWT
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -40,7 +40,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// ConfiguraÁ„o do Swagger para funcionar em produÁ„o e desenvolvimento
+// Configura√ß√£o do Swagger para funcionar em produ√ß√£o e desenvolvimento
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Plataforma de Campeonato de lutas API", Version = "v1" });
@@ -72,12 +72,12 @@ builder.Services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
-// Habilitar o Swagger em ambos os ambientes (desenvolvimento e produÁ„o)
+// Habilitar o Swagger em ambos os ambientes (desenvolvimento e produ√ß√£o)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Plataforma de JiuJitsu API V1");
-    c.RoutePrefix = string.Empty; // Torna o Swagger acessÌvel na raiz do app
+    c.RoutePrefix = string.Empty; // Torna o Swagger acess√≠vel na raiz do app
 });
 
 // Middleware
@@ -87,4 +87,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// Aplica automaticamente todas as migrations pendentes ao iniciar a aplica√ß√£o
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
 app.Run();
