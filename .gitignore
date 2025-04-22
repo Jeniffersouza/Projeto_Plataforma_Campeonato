@@ -7,3 +7,5 @@
 *.suo
 *.userosscache
 *.sln.docstates
+echo "bin/" >> .gitignore
+echo "obj/" >> .gitignore
