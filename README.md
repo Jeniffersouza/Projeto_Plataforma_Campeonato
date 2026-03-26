@@ -30,5 +30,3 @@ Para mais detalhes sobre a estrutura do projeto e instruções de uso, consulte 
 
 ## 🙌 ATENÇÃO
 Esse projeto foi separado em uma conta do github separada, veja todas as partes aqui: https://github.com/ConectaLutas
-EsCada ideia compartilhada, cada hora dedicada e cada desafio superado juntos foram fundamentais para transformar esta plataforma de campeonatos em realidade. 
-O comprometimento, a colaboração e a paixão de cada membro da equipe foram essenciais para o sucesso alcançado.
